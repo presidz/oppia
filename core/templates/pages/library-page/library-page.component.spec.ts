@@ -16,7 +16,6 @@
  * @fileoverview Unit tests for the component of the library page.
  */
 
-// @ts-nocheck
 
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {
@@ -640,7 +639,8 @@ describe('Library Page Component', () => {
 
     const tile = document.createElement('div');
     tile.classList.add('oppia-library-carousel-tiles');
-    componentInstance.el.nativeElement.appendChild(tile);
+    // eslint-disable-next-line dot-notation
+    componentInstance['el'].nativeElement.appendChild(tile);
     componentInstance.initCarousels();
     expect(componentInstance.leftmostCardIndices.length).toEqual(1);
   });
@@ -694,9 +694,10 @@ describe('Library Page Component', () => {
     spyOnProperty(HTMLElement.prototype, 'scrollLeft', 'get').and.returnValue(
       0
     );
-    spyOn(window, 'requestAnimationFrame').and.callFake(callback =>
-      callback(0)
-    );
+    spyOn(window, 'requestAnimationFrame').and.callFake(callback => {
+      callback(0);
+      return 0;
+    });
 
     componentInstance.scroll(3, false);
     componentInstance.scroll(3, true);
@@ -755,9 +756,10 @@ describe('Library Page Component', () => {
     spyOnProperty(HTMLElement.prototype, 'scrollLeft', 'get').and.returnValue(
       0
     );
-    spyOn(window, 'requestAnimationFrame').and.callFake(callback =>
-      callback(0)
-    );
+    spyOn(window, 'requestAnimationFrame').and.callFake(callback => {
+      callback(0);
+      return 0;
+    });
 
     componentInstance.tileDisplayCount = 5;
     componentInstance.scroll(1, false);
@@ -862,7 +864,11 @@ describe('Library Page Component', () => {
   });
   it('should set max-width style on carousel element when it exists', fakeAsync(() => {
     const originalLibraryTileWidth = AppConstants.LIBRARY_TILE_WIDTH_PX;
-    AppConstants.LIBRARY_TILE_WIDTH_PX = 200;
+    Object.defineProperty(AppConstants, 'LIBRARY_TILE_WIDTH_PX', {
+      value: 200,
+      writable: true,
+      configurable: true,
+    });
 
     componentInstance.tileDisplayCount = 3;
     componentInstance.libraryWindowIsNarrow = false;
@@ -887,14 +893,17 @@ describe('Library Page Component', () => {
 
     let carouselElement = document.createElement('div');
     carouselElement.setAttribute('class', 'oppia-library-carousel');
-    componentInstance.el.nativeElement.appendChild(carouselElement);
+    // eslint-disable-next-line dot-notation
+    componentInstance['el'].nativeElement.appendChild(carouselElement);
 
-    spyOn(componentInstance.el.nativeElement, 'querySelector').and.returnValue(
+    // eslint-disable-next-line dot-notation
+    spyOn(componentInstance['el'].nativeElement, 'querySelector').and.returnValue(
       carouselElement
     );
 
     let rendererSetStyleSpy = spyOn(
-      componentInstance.renderer,
+      // eslint-disable-next-line dot-notation
+      componentInstance['renderer'],
       'setStyle'
     ).and.callThrough();
 
@@ -921,7 +930,11 @@ describe('Library Page Component', () => {
     );
     expect(rendererSetStyleSpy).toHaveBeenCalledTimes(1);
 
-    AppConstants.LIBRARY_TILE_WIDTH_PX = originalLibraryTileWidth;
+    Object.defineProperty(AppConstants, 'LIBRARY_TILE_WIDTH_PX', {
+      value: originalLibraryTileWidth,
+      writable: true,
+      configurable: true,
+    });
   }));
 
   it('should scroll the carousel to the right smoothly', fakeAsync(() => {
